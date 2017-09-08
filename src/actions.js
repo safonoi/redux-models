@@ -49,19 +49,23 @@ export function createActionCreator(model, method) {
 
     try {
       const methodResult = method.call(model.actions, ...params, dispatch);
-      const methodResultPromise = methodResult && methodResult.then && methodResult.catch
-        ? methodResult
-        : Promise.resolve(methodResult);
+      const methodResultIsPromise = methodResult && methodResult.then && methodResult.catch;
 
-      return methodResultPromise
+      if (!methodResultIsPromise) {
+        const normalizedResult = methodResultNormalizer(methodResult);
+        dispatch(successAction(params, normalizedResult));
+        return normalizedResult;
+      }
+
+      return methodResult
         .then(result => methodResultNormalizer(result))
         .then(normalizedResult => {
           try {
             dispatch(successAction(params, normalizedResult));
-          } catch (e) {
+          } catch (error) {
             // catch errors from components...
-            console.error(e);
-            throw e;
+            console.error(error);
+            throw error;
           }
 
           return normalizedResult;
