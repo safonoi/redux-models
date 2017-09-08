@@ -29,7 +29,12 @@ export function actionTypes(modelName, methods) {
 }
 
 export function createActionCreator(model, method) {
-  const [start, success, failure] = methodNameToTypes(model.config().name, method.name || method);
+  const modelConfig = model.config();
+  const [start, success, failure] = methodNameToTypes(modelConfig.name, method.name || method);
+  const methodResultNormalizer = modelConfig.normalizers &&
+    typeof modelConfig.normalizers[method.name || method] === 'function'
+      ? modelConfig.normalizers[method.name || method]
+      : result => result;
 
   if (!isFunction(method)) {
     return createAction(success, () => method);
@@ -43,29 +48,28 @@ export function createActionCreator(model, method) {
     dispatch(startAction(...params));
 
     try {
-      let result = method.call(model.actions, ...params, dispatch);
+      const methodResult = method.call(model.actions, ...params, dispatch);
+      const methodResultPromise = methodResult && methodResult.then && methodResult.catch
+        ? methodResult
+        : Promise.resolve(methodResult);
 
-      if (result && result.then && result.catch) {
-        return result
-          .then((data) => {
-            try {
-              dispatch(successAction(params, data));
-            } catch (e) {
-              // catch errors from components...
-              console.error(e);
-              throw e;
-            }
+      return methodResultPromise
+        .then(result => methodResultNormalizer(result))
+        .then(normalizedResult => {
+          try {
+            dispatch(successAction(params, normalizedResult));
+          } catch (e) {
+            // catch errors from components...
+            console.error(e);
+            throw e;
+          }
 
-            return data;
-          })
-          .catch((error) => {
-            dispatch(failureAction(params, error));
-            throw error;
-          });
-      }
-
-      dispatch(successAction(params, result));
-      return result;
+          return normalizedResult;
+        })
+        .catch((error) => {
+          dispatch(failureAction(params, error));
+          throw error;
+        });
     } catch (error) {
       // catch errors from components...
       console.error(error);

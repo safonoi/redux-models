@@ -44,6 +44,7 @@ function _createModel(model) {
  * @param {Object} config
  * @param {String} config.name
  * @param {Object} config.methods
+ * @param {Object} config.normalizers
  * @param {Object} config.reducers
  * @param {Object} config.selectors
  * @param {Function} [config.stateToModel]
