@@ -11,7 +11,8 @@
   "scripts": {
     "build": "rimraf build && babel src --out-dir build",
     "test": "jest --coverage",
-    "prepublish": "npm test && npm run build"
+    "prepublish": "yarn run snyk-protect && npm test && npm run build",
+    "snyk-protect": "snyk protect"
   },
   "repository": {
     "type": "git",
@@ -31,7 +32,8 @@
   "homepage": "https://github.com/vshushkov/redux-models#readme",
   "dependencies": {
     "lodash": "^4.15.0",
-    "redux-actions": "^1.0.1"
+    "redux-actions": "^1.0.1",
+    "snyk": "^1.316.1"
   },
   "devDependencies": {
     "babel-cli": "^6.11.4",
@@ -55,5 +57,6 @@
       "lcov",
       "text"
     ]
-  }
+  },
+  "snyk": true
 }
