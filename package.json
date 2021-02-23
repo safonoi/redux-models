@@ -30,7 +30,7 @@
   },
   "homepage": "https://github.com/vshushkov/redux-models#readme",
   "dependencies": {
-    "lodash": "^4.15.0",
+    "lodash": "^4.17.21",
     "redux-actions": "^1.0.1"
   },
   "devDependencies": {
