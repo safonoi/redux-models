@@ -31,7 +31,7 @@
   "homepage": "https://github.com/vshushkov/redux-models#readme",
   "dependencies": {
     "lodash": "^4.15.0",
-    "redux-actions": "^1.0.1"
+    "redux-actions": "^2.5.0"
   },
   "devDependencies": {
     "babel-cli": "^6.11.4",
